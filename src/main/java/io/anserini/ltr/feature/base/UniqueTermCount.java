@@ -16,10 +16,7 @@
 
 package io.anserini.ltr.feature.base;
 
-import io.anserini.ltr.feature.FeatureExtractor;
-import io.anserini.rerank.RerankerContext;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Terms;
+import io.anserini.ltr.feature.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,15 +24,43 @@ import java.util.Set;
 /**
  * Count of unique query terms
  */
-public class UniqueTermCount<T> implements FeatureExtractor<T> {
+public class UniqueTermCount implements FeatureExtractor {
+  private String qfield;
+  public UniqueTermCount() { this.qfield = "analyzed";}
+
+  public UniqueTermCount(String qfield) { this.qfield = qfield; }
+
   @Override
-  public float extract(Document doc, Terms terms, RerankerContext<T> context) {
-    Set<String> queryTokens = new HashSet<>(context.getQueryTokens());
-    return queryTokens.size();
+  public float extract(DocumentContext documentContext, QueryContext queryContext) {
+    QueryFieldContext queryFieldContext = queryContext.fieldContexts.get(qfield);
+    Set<String> queryTokenSet = new HashSet<>(queryFieldContext.queryTokens);
+    float uniqueQueryTerms = queryTokenSet.size();
+    return uniqueQueryTerms;
+  }
+
+  @Override
+  public float postEdit(DocumentContext context, QueryContext queryContext) {
+    QueryFieldContext queryFieldContext = queryContext.fieldContexts.get(qfield);
+    return queryFieldContext.getSelfLog(context.docId, getName());
   }
 
   @Override
   public String getName() {
-    return "UniqueQueryTerms";
+    return String.format("%s_UniqueQueryTerms", qfield);
+  }
+
+  @Override
+  public String getField() {
+    return null;
+  }
+
+  @Override
+  public String getQField() {
+    return qfield;
+  }
+
+  @Override
+  public FeatureExtractor clone() {
+    return new UniqueTermCount(qfield);
   }
 }

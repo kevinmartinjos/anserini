@@ -16,63 +16,39 @@
 
 package io.anserini.ltr.feature;
 
-import io.anserini.ltr.feature.base.AvgICTFFeatureExtractor;
-import io.anserini.ltr.feature.base.AvgIDFFeatureExtractor;
-import io.anserini.ltr.feature.base.BM25FeatureExtractor;
-import io.anserini.ltr.feature.base.DocSizeFeatureExtractor;
-import io.anserini.ltr.feature.base.MatchingTermCount;
-import io.anserini.ltr.feature.base.PMIFeatureExtractor;
-import io.anserini.ltr.feature.base.QueryLength;
-import io.anserini.ltr.feature.base.SCQFeatureExtractor;
-import io.anserini.ltr.feature.base.SimplifiedClarityFeatureExtractor;
-import io.anserini.ltr.feature.base.SumMatchingTf;
-import io.anserini.ltr.feature.base.TFIDFFeatureExtractor;
-import io.anserini.ltr.feature.base.TermFrequencyFeatureExtractor;
-import io.anserini.ltr.feature.base.UniqueTermCount;
-import io.anserini.ltr.feature.twitter.HashtagCount;
-import io.anserini.ltr.feature.twitter.IsTweetReply;
-import io.anserini.ltr.feature.twitter.LinkCount;
-import io.anserini.ltr.feature.twitter.TwitterFollowerCount;
-import io.anserini.ltr.feature.twitter.TwitterFriendCount;
-import io.anserini.rerank.RerankerContext;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Terms;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * A feature extractor.
  */
-public interface FeatureExtractor<T> {
-  //********************************************************
-  // TODO normalize names
-  final Map<String, Class<?>> EXTRACTOR_MAP = new HashMap<String, Class<?>>() {{
-    put("AvgICTF", AvgICTFFeatureExtractor.class);
-    put("SimplifiedClarityScore", SimplifiedClarityFeatureExtractor.class);
-    put("PMIFeature", PMIFeatureExtractor.class);
-    put("AvgSCQ", SCQFeatureExtractor.class);
-    put("SumMatchingTf", SumMatchingTf.class);
-    put("UnigramsFeatureExtractor", UnigramFeatureExtractor.class);
-    put("AvgIDF", AvgIDFFeatureExtractor.class);
-    put("BM25Feature", BM25FeatureExtractor.class);
-    put("DocSize", DocSizeFeatureExtractor.class);
-    put("MatchingTermCount", MatchingTermCount.class);
-    put("QueryLength", QueryLength.class);
-    put("SumTermFrequency", TermFrequencyFeatureExtractor.class);
-    put("TFIDF", TFIDFFeatureExtractor.class);
-    put("UniqueQueryTerms", UniqueTermCount.class);
-    put("UnorderedSequentialPairs", UnorderedSequentialPairsFeatureExtractor.class);
-    put("OrderedSequentialPairs", OrderedSequentialPairsFeatureExtractor.class);
-    put("TwitterHashtagCount", HashtagCount.class);
-    put("IsTweetReply", IsTweetReply.class);
-    put("TwitterLinkCount", LinkCount.class);
-    put("TwitterFollowerCount", TwitterFollowerCount.class);
-    put("TwitterFriendCount", TwitterFriendCount.class);
-  }};
+public interface FeatureExtractor {
 
-  float extract(Document doc, Terms terms, RerankerContext<T> context);
+  float extract(DocumentContext context, QueryContext queryContext) throws FileNotFoundException, IOException;
 
+  float postEdit(DocumentContext context, QueryContext queryContext);
+
+  /**
+   * we need to make sure each thread has a thread-local copy of extractors
+   * otherwise we will have concurrency problems
+   * @return a copy with the same set up
+   */
+  FeatureExtractor clone();
+
+  /**
+   * used for tell the corresponding feature name for each column in the feature vector
+   * @return feature name
+   */
   String getName();
+
+  /**
+   * @return the field this feature extractor needs to load
+   */
+  String getField();
+
+  /**
+   * @return the query field this feature extractor needs to load
+   */
+  String getQField();
 
 }

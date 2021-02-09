@@ -49,10 +49,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.ar.ArabicAnalyzer;
 import org.apache.lucene.analysis.bn.BengaliAnalyzer;
 import org.apache.lucene.analysis.cjk.CJKAnalyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.de.GermanAnalyzer;
 import org.apache.lucene.analysis.es.SpanishAnalyzer;
 import org.apache.lucene.analysis.fr.FrenchAnalyzer;
@@ -70,6 +70,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.common.SolrInputDocument;
+import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
@@ -87,7 +88,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -514,7 +520,10 @@ public final class IndexCollection {
 
           String indexName = (args.esIndex != null) ? args.esIndex : input.getFileName().toString();
           bulkRequest.add(new IndexRequest(indexName).id(sourceDocument.id()).source(builder));
-          if (bulkRequest.numberOfActions() == args.esBatch) {
+
+          // sendBulkRequest when the batch size is reached OR the bulk size is reached
+          if (bulkRequest.numberOfActions() == args.esBatch || 
+              bulkRequest.estimatedSizeInBytes() >= args.esBulk) {
             sendBulkRequest();
           }
 
@@ -573,6 +582,16 @@ public final class IndexCollection {
         bulkRequest = new BulkRequest();
       } catch (Exception e) {
         LOG.error("Error sending bulk requests to Elasticsearch", e);
+
+        // Log the 10 docs that have the largest sizes in this request
+        List<DocWriteRequest<?>> docs = bulkRequest.requests();
+        Collections.sort(docs, (d1, d2) -> ((IndexRequest) d2).source().length() - ((IndexRequest) d1).source().length());
+
+        LOG.info("Error sending bulkRequest. The 10 largest docs in this request are the following cord_uid: ");
+        for (int i = 0; i < 10; i++) {
+          IndexRequest doc = (IndexRequest) docs.get(i);
+          LOG.info(doc.id()); 
+        }
       } finally {
         if (esClient != null) {
           try {
@@ -735,16 +754,10 @@ public final class IndexCollection {
       final BengaliAnalyzer bengaliAnalyzer = new BengaliAnalyzer();
       final GermanAnalyzer germanAnalyzer = new GermanAnalyzer();
       final SpanishAnalyzer spanishAnalyzer = new SpanishAnalyzer();
-      final DefaultEnglishAnalyzer analyzer;
-      if (args.keepStopwords) {
-        analyzer = DefaultEnglishAnalyzer.newStemmingInstance(args.stemmer, CharArraySet.EMPTY_SET);
-      } else if (args.stopwords != null) {
-        final List<String> stopWords = FileUtils.readLines(new File(args.stopwords), "utf-8");
-        final CharArraySet stopWordsSet = new CharArraySet(stopWords, false);
-        analyzer = DefaultEnglishAnalyzer.newStemmingInstance(args.stemmer, CharArraySet.unmodifiableSet(stopWordsSet));
-      } else {
-        analyzer = DefaultEnglishAnalyzer.newStemmingInstance(args.stemmer);
-      }
+      final WhitespaceAnalyzer whitespaceAnalyzer = new WhitespaceAnalyzer();
+
+      final DefaultEnglishAnalyzer analyzer = DefaultEnglishAnalyzer.fromArguments(
+              args.stemmer, args.keepStopwords, args.stopwords);
       final TweetAnalyzer tweetAnalyzer = new TweetAnalyzer(args.tweetStemming);
 
       final IndexWriterConfig config;
@@ -764,6 +777,8 @@ public final class IndexCollection {
         config = new IndexWriterConfig(germanAnalyzer);
       } else if (args.language.equals("es")) {
         config = new IndexWriterConfig(spanishAnalyzer);
+      } else if (args.language.equals("en_ws")) {
+        config = new IndexWriterConfig(whitespaceAnalyzer);
       } else {
         config = new IndexWriterConfig(analyzer);
       }

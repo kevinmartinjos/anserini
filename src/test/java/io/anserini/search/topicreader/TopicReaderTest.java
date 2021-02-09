@@ -39,8 +39,7 @@ public class TopicReaderTest {
         TopicReader.getTopicReaderClassByFile("topics.covid-round1.xml"));
 
     // Unknown TopicReader class.
-    assertEquals(null,
-        TopicReader.getTopicReaderClassByFile("topics.unknown.txt"));
+    assertEquals(null, TopicReader.getTopicReaderClassByFile("topics.unknown.txt"));
   }
 
   @Test
@@ -465,6 +464,14 @@ public class TopicReaderTest {
     assertEquals(1102400, (int) topics.lastKey());
     assertEquals("why do bears hibernate", topics.get(topics.lastKey()).get("title"));
 
+    topics = TopicReader.getTopics(Topics.MSMARCO_DOC_TEST);
+    assertNotNull(topics);
+    assertEquals(5793, topics.size());
+    assertEquals(57, (int) topics.firstKey());
+    assertEquals("term service agreement definition", topics.get(topics.firstKey()).get("title"));
+    assertEquals(1136966, (int) topics.lastKey());
+    assertEquals("#ffffff color code", topics.get(topics.lastKey()).get("title"));
+
     topics = TopicReader.getTopics(Topics.MSMARCO_PASSAGE_DEV_SUBSET);
     assertNotNull(topics);
     assertEquals(6980, topics.size());
@@ -472,6 +479,132 @@ public class TopicReaderTest {
     assertEquals("Androgen receptor define", topics.get(topics.firstKey()).get("title"));
     assertEquals(1102400, (int) topics.lastKey());
     assertEquals("why do bears hibernate", topics.get(topics.lastKey()).get("title"));
+
+    topics = TopicReader.getTopics(Topics.MSMARCO_PASSAGE_TEST_SUBSET);
+    assertNotNull(topics);
+    assertEquals(6837, topics.size());
+    assertEquals(57, (int) topics.firstKey());
+    assertEquals("term service agreement definition", topics.get(topics.firstKey()).get("title"));
+    assertEquals(1136966, (int) topics.lastKey());
+    assertEquals("#ffffff color code", topics.get(topics.lastKey()).get("title"));
+  }
+
+  @Test
+  public void testDprNq() {
+    SortedMap<Integer, Map<String, String>> topics;
+
+    topics = TopicReader.getTopics(Topics.DPR_NQ_DEV);
+    assertNotNull(topics);
+    assertEquals(8757, topics.size());
+    assertEquals(0, (int) topics.firstKey());
+    assertEquals("who sings does he love me with reba", topics.get(topics.firstKey()).get("title"));
+    assertEquals("['Linda Davis']", topics.get(topics.firstKey()).get("answers"));
+    assertEquals(8756, (int) topics.lastKey());
+    assertEquals("when did the gop take control of the house", topics.get(topics.lastKey()).get("title"));
+    assertEquals("['2010']", topics.get(topics.lastKey()).get("answers"));
+
+    topics = TopicReader.getTopics(Topics.DPR_NQ_TEST);
+    assertNotNull(topics);
+    assertEquals(3610, topics.size());
+    assertEquals(0, (int) topics.firstKey());
+    assertEquals("who got the first nobel prize in physics", topics.get(topics.firstKey()).get("title"));
+    assertEquals("['Wilhelm Conrad Röntgen']", topics.get(topics.firstKey()).get("answers"));
+    assertEquals(3609, (int) topics.lastKey());
+    assertEquals("when did computer become widespread in homes and schools", topics.get(topics.lastKey()).get("title"));
+    assertEquals("['1980s']", topics.get(topics.lastKey()).get("answers"));
+  }
+
+  @Test
+  public void testDprTrivia() {
+    SortedMap<Integer, Map<String, String>> topics;
+
+    topics = TopicReader.getTopics(Topics.DPR_TRIVIA_DEV);
+    assertNotNull(topics);
+    assertEquals(8837, topics.size());
+    assertEquals(0, (int) topics.firstKey());
+    assertEquals("The VS-300 was a type of what?", topics.get(topics.firstKey()).get("title"));
+    assertEquals("['🚁', 'Helicopters', 'Civilian helicopter', 'Pescara (helicopter)', 'Cargo helicopter', 'Copter', 'Helecopter', 'List of deadliest helicopter crashes', 'Helichopper', 'Helocopter', 'Cargo Helicopter', 'Helicopter', 'Helicoptor', 'Anatomy of a helicopter']", topics.get(topics.firstKey()).get("answers"));
+    assertEquals(8836, (int) topics.lastKey());
+    assertEquals("Name the artist and the title of this 1978 classic that remains popular today: We were at the beach Everybody had matching towels Somebody went under a dock And there they saw a rock It wasnt a rock", topics.get(topics.lastKey()).get("title"));
+    assertEquals("['Rock Lobster by the B-52s']", topics.get(topics.lastKey()).get("answers"));
+
+    topics = TopicReader.getTopics(Topics.DPR_TRIVIA_TEST);
+    assertNotNull(topics);
+    assertEquals(11313, topics.size());
+    assertEquals(0, (int) topics.firstKey());
+    assertEquals("Who was the man behind The Chipmunks?", topics.get(topics.firstKey()).get("title"));
+    assertEquals("['David Seville']", topics.get(topics.firstKey()).get("answers"));
+    assertEquals(11312, (int) topics.lastKey());
+    assertEquals("In what outdoor sport, sanctioned by the NHPA, do you score 3 points for a ringer, 2 for a leaner, and the closet scores a point?", topics.get(topics.lastKey()).get("title"));
+    assertEquals("['Horseshoe pit', 'Horseshoes (game)', 'Horseshoes', 'Horseshoe Pitching', 'Horse shoes', 'Horseshoe pitching', 'Horseshoe throwing']", topics.get(topics.lastKey()).get("answers"));
+  }
+
+  @Test
+  public void testDprWq() {
+    SortedMap<Integer, Map<String, String>> topics;
+
+    topics = TopicReader.getTopics(Topics.DPR_WQ_TEST);
+    assertNotNull(topics);
+    assertEquals(2032, topics.size());
+    assertEquals(0, (int) topics.firstKey());
+    assertEquals("what does jamaican people speak?", topics.get(topics.firstKey()).get("title"));
+    assertEquals("[\"Jamaican Creole English Language\",\"Jamaican English\"]", topics.get(topics.firstKey()).get("answers"));
+    assertEquals(2031, (int) topics.lastKey());
+    assertEquals("when was father chris riley born?", topics.get(topics.lastKey()).get("title"));
+    assertEquals("[\"1967\"]", topics.get(topics.lastKey()).get("answers"));
+  }
+
+  @Test
+  public void testDprCurated() {
+    SortedMap<Integer, Map<String, String>> topics;
+
+    topics = TopicReader.getTopics(Topics.DPR_CURATED_TEST);
+    assertNotNull(topics);
+    assertEquals(694, topics.size());
+    assertEquals(0, (int) topics.firstKey());
+    assertEquals("How tall is Mount McKinley?", topics.get(topics.firstKey()).get("title"));
+    assertEquals("[\"20\\\\s?,?\\\\s?(32|40)0\\\\s?-?\\\\s?f(ee|oo)t|6,194-meter|20,?237\\\\s*f(oo|ee)?t|20,?073\\\\s*f(oo|ee)?t|6,?168\\\\s*m|6,118\\\\s*m|6\\\\,194 m|20\\\\,322 feet\"]", topics.get(topics.firstKey()).get("answers"));
+    assertEquals(693, (int) topics.lastKey());
+    assertEquals("What state is the geographic center of the lower 48 states?", topics.get(topics.lastKey()).get("title"));
+    assertEquals("[\"Kansas\"]", topics.get(topics.lastKey()).get("answers"));
+  }
+
+  @Test
+  public void testDprSquad() {
+    SortedMap<Integer, Map<String, String>> topics;
+
+    topics = TopicReader.getTopics(Topics.DPR_SQUAD_TEST);
+    assertNotNull(topics);
+    assertEquals(10570, topics.size());
+    assertEquals(0, (int) topics.firstKey());
+    assertEquals("Which NFL team represented the AFC at Super Bowl 50?", topics.get(topics.firstKey()).get("title"));
+    assertEquals("[\"Denver Broncos\",\"Denver Broncos\",\"Denver Broncos\"]", topics.get(topics.firstKey()).get("answers"));
+    assertEquals(10569, (int) topics.lastKey());
+    assertEquals("What is the seldom used force unit equal to one thousand newtons?", topics.get(topics.lastKey()).get("title"));
+    assertEquals("[\"sthène\",\"sthène\",\"sthène\",\"sthène\",\"sthène\"]", topics.get(topics.lastKey()).get("answers"));
+  }
+
+  @Test
+  public void testTREC19DL() {
+    SortedMap<Integer, Map<String, String>> topics;
+
+    topics = TopicReader.getTopics(Topics.TREC2019_DL_PASSAGE);
+    assertNotNull(topics);
+    assertEquals(43, topics.size());
+    assertEquals(19335, (int) topics.firstKey());
+    assertEquals("anthropological definition of environment", topics.get(topics.firstKey()).get("title"));
+    assertEquals(1133167, (int) topics.lastKey());
+    assertEquals("how is the weather in jamaica", topics.get(topics.lastKey()).get("title"));
+    assertEquals("does legionella pneumophila cause pneumonia", topics.get(168216).get("title"));
+
+    topics = TopicReader.getTopics(Topics.TREC2019_DL_DOC);
+    assertNotNull(topics);
+    assertEquals(43, topics.size());
+    assertEquals(19335, (int) topics.firstKey());
+    assertEquals("anthropological definition of environment", topics.get(topics.firstKey()).get("title"));
+    assertEquals(1133167, (int) topics.lastKey());
+    assertEquals("how is the weather in jamaica", topics.get(topics.lastKey()).get("title"));
+    assertEquals("how long to hold bow in yoga", topics.get(1132213).get("title"));
   }
 
   @Test
@@ -484,11 +617,23 @@ public class TopicReaderTest {
     assertEquals("androgen receptor define", topics.get("2").get("title"));
     assertEquals("why do bears hibernate", topics.get("1102400").get("title"));
 
+    topics = TopicReader.getTopicsWithStringIds(Topics.MSMARCO_DOC_TEST);
+    assertNotNull(topics);
+    assertEquals(5793, topics.size());
+    assertEquals("term service agreement definition", topics.get("57").get("title"));
+    assertEquals("#ffffff color code", topics.get("1136966").get("title"));
+
     topics = TopicReader.getTopicsWithStringIds(Topics.MSMARCO_PASSAGE_DEV_SUBSET);
     assertNotNull(topics);
     assertEquals(6980, topics.size());
     assertEquals("Androgen receptor define", topics.get("2").get("title"));
     assertEquals("why do bears hibernate", topics.get("1102400").get("title"));
+
+    topics = TopicReader.getTopicsWithStringIds(Topics.MSMARCO_PASSAGE_TEST_SUBSET);
+    assertNotNull(topics);
+    assertEquals(6837, topics.size());
+    assertEquals("term service agreement definition", topics.get("57").get("title"));
+    assertEquals("#ffffff color code", topics.get("1136966").get("title"));
   }
 
   @Test
@@ -595,6 +740,7 @@ public class TopicReaderTest {
   public void testCovidTopics() {
     Map<String, Map<String, String>> topics;
 
+    // Round 1
     topics = TopicReader.getTopics(Topics.COVID_ROUND1);
     assertEquals(30, topics.keySet().size());
 
@@ -610,41 +756,76 @@ public class TopicReaderTest {
         "seeking specific information on clinical outcomes in COVID-19 patients treated with remdesivir",
         topics.get(30).get("narrative"));
 
+    // Round 2
     topics = TopicReader.getTopics(Topics.COVID_ROUND2);
     assertEquals(35, topics.keySet().size());
 
     assertEquals("coronavirus public datasets", topics.get(35).get("query"));
 
+    // Round 3
     topics = TopicReader.getTopics(Topics.COVID_ROUND3);
     assertEquals(40, topics.keySet().size());
 
     assertEquals("coronavirus mutations", topics.get(40).get("query"));
+
+    // Round 4
+    topics = TopicReader.getTopics(Topics.COVID_ROUND4);
+    assertEquals(45, topics.keySet().size());
+
+    assertEquals("coronavirus mental health impact", topics.get(45).get("query"));
+
+    // Round 5
+    topics = TopicReader.getTopics(Topics.COVID_ROUND5);
+    assertEquals(50, topics.keySet().size());
+
+    assertEquals("mRNA vaccine coronavirus", topics.get(50).get("query"));
   }
 
   @Test
   public void testCovidTopicsUDel() {
     Map<String, Map<String, String>> topics;
 
+    // Round 1
     topics = TopicReader.getTopics(Topics.COVID_ROUND1_UDEL);
     assertEquals(30, topics.keySet().size());
 
-    assertEquals("coronavirus remdesivir remdesivir effective treatment COVID-19", topics.get(30).get("query"));
+    assertEquals("coronavirus remdesivir remdesivir effective treatment COVID-19",
+        topics.get(30).get("query"));
 
+    // Round 2
     topics = TopicReader.getTopics(Topics.COVID_ROUND2_UDEL);
     assertEquals(35, topics.keySet().size());
 
-    assertEquals("coronavirus public datasets public datasets COVID-19", topics.get(35).get("query"));
+    assertEquals("coronavirus public datasets public datasets COVID-19",
+        topics.get(35).get("query"));
 
+    // Round 3
     topics = TopicReader.getTopics(Topics.COVID_ROUND3_UDEL);
     assertEquals(40, topics.keySet().size());
 
-    assertEquals("coronavirus mutations observed mutations SARS-CoV-2 genome mutations", topics.get(40).get("query"));
+    assertEquals("coronavirus mutations observed mutations SARS-CoV-2 genome mutations",
+        topics.get(40).get("query"));
+
+    // Round 4
+    topics = TopicReader.getTopics(Topics.COVID_ROUND4_UDEL);
+    assertEquals(45, topics.keySet().size());
+
+    assertEquals("coronavirus mental health impact COVID-19 pandemic impacted mental health",
+        topics.get(45).get("query"));
+
+    // Round 5
+    topics = TopicReader.getTopics(Topics.COVID_ROUND5_UDEL);
+    assertEquals(50, topics.keySet().size());
+
+    assertEquals("mRNA vaccine coronavirus mRNA vaccine SARS-CoV-2 virus",
+            topics.get(50).get("query"));
   }
 
   @Test
   public void testCovidTopics_TopicIdsAsStrings() {
     Map<String, Map<String, String>> topics;
 
+    // Round 1
     topics = TopicReader.getTopicsWithStringIds(Topics.COVID_ROUND1);
 
     assertEquals(30, topics.keySet().size());
@@ -661,35 +842,69 @@ public class TopicReaderTest {
         "seeking specific information on clinical outcomes in COVID-19 patients treated with remdesivir",
         topics.get("30").get("narrative"));
 
+    // Round 2
     topics = TopicReader.getTopicsWithStringIds(Topics.COVID_ROUND2);
     assertEquals(35, topics.keySet().size());
 
     assertEquals("coronavirus public datasets", topics.get("35").get("query"));
 
+    // Round 3
     topics = TopicReader.getTopicsWithStringIds(Topics.COVID_ROUND3);
     assertEquals(40, topics.keySet().size());
 
     assertEquals("coronavirus mutations", topics.get("40").get("query"));
+
+    // Round 4
+    topics = TopicReader.getTopicsWithStringIds(Topics.COVID_ROUND4);
+    assertEquals(45, topics.keySet().size());
+
+    assertEquals("coronavirus mental health impact", topics.get("45").get("query"));
+
+    // Round 5
+    topics = TopicReader.getTopicsWithStringIds(Topics.COVID_ROUND5);
+    assertEquals(50, topics.keySet().size());
+
+    assertEquals("mRNA vaccine coronavirus", topics.get("50").get("query"));
   }
 
   @Test
   public void testCovidTopicsUDel_TopicIdsAsStrings() {
     Map<String, Map<String, String>> topics;
 
+    // Round 1
     topics = TopicReader.getTopicsWithStringIds(Topics.COVID_ROUND1_UDEL);
     assertEquals(30, topics.keySet().size());
 
-    assertEquals("coronavirus remdesivir remdesivir effective treatment COVID-19", topics.get("30").get("query"));
+    assertEquals("coronavirus remdesivir remdesivir effective treatment COVID-19",
+        topics.get("30").get("query"));
 
+    // Round 2
     topics = TopicReader.getTopicsWithStringIds(Topics.COVID_ROUND2_UDEL);
     assertEquals(35, topics.keySet().size());
 
-    assertEquals("coronavirus public datasets public datasets COVID-19", topics.get("35").get("query"));
+    assertEquals("coronavirus public datasets public datasets COVID-19",
+        topics.get("35").get("query"));
 
+    // Round 3
     topics = TopicReader.getTopicsWithStringIds(Topics.COVID_ROUND3_UDEL);
     assertEquals(40, topics.keySet().size());
 
-    assertEquals("coronavirus mutations observed mutations SARS-CoV-2 genome mutations", topics.get("40").get("query"));
+    assertEquals("coronavirus mutations observed mutations SARS-CoV-2 genome mutations",
+        topics.get("40").get("query"));
+
+    // Round 4
+    topics = TopicReader.getTopicsWithStringIds(Topics.COVID_ROUND4_UDEL);
+    assertEquals(45, topics.keySet().size());
+
+    assertEquals("coronavirus mental health impact COVID-19 pandemic impacted mental health",
+        topics.get("45").get("query"));
+
+    // Round 5
+    topics = TopicReader.getTopicsWithStringIds(Topics.COVID_ROUND5_UDEL);
+    assertEquals(50, topics.keySet().size());
+
+    assertEquals("mRNA vaccine coronavirus mRNA vaccine SARS-CoV-2 virus",
+            topics.get("50").get("query"));
   }
 
   @Test
@@ -725,5 +940,77 @@ public class TopicReaderTest {
     assertEquals("https://www.washingtonpost.com/news/capital-weather-gang/wp/2017/07/14/" +
         "sun-erupts-to-mark-another-bastille-day-aurora-possible-in-new-england-sunday-night/",
         topics.get(topics.lastKey()).get("url"));
+  }
+
+  @Test
+  public void testEpidemicQATopics() {
+    SortedMap<Integer, Map<String, String>> consumerTopics;
+    consumerTopics = TopicReader.getTopics(Topics.EPIDEMIC_QA_CONSUMER_PRELIM);
+
+    // No consumer questions from CQ035 to CQ037
+    assertEquals(42, consumerTopics.keySet().size());
+    assertEquals(1, (int) consumerTopics.firstKey());
+    assertEquals("what is the origin of COVID-19",
+                 consumerTopics.get(consumerTopics.firstKey()).get("question"));
+    assertEquals("CQ001", consumerTopics.get(consumerTopics.firstKey()).get("question_id"));
+    assertEquals("coronavirus origin", consumerTopics.get(consumerTopics.firstKey()).get("query"));
+    // There's a typo in this but the same typo is present in the topics 
+    // document.
+    assertEquals("seeking information about whether the virus was designed in a lab or occured "+
+                 "naturally in animals and how it got to humans",
+                 consumerTopics.get(consumerTopics.firstKey()).get("background"));
+
+    assertEquals(45, (int) consumerTopics.lastKey());
+    assertEquals("how has the COVID-19 pandemic impacted mental health?",
+                 consumerTopics.get(consumerTopics.lastKey()).get("question"));
+    assertEquals("CQ045", consumerTopics.get(consumerTopics.lastKey()).get("question_id"));
+    assertEquals("coronavirus mental health impact",
+                 consumerTopics.get(consumerTopics.lastKey()).get("query"));
+    assertEquals("seeking information about psychological effects of COVID-19 and "+
+                 "COVID-19 effect on mental health and pre-existing conditions",
+                 consumerTopics.get(consumerTopics.lastKey()).get("background"));
+
+    SortedMap<Integer, Map<String, String>> expertTopics;
+    expertTopics = TopicReader.getTopics(Topics.EPIDEMIC_QA_EXPERT_PRELIM);
+
+    assertEquals(45, expertTopics.keySet().size());
+
+    assertEquals(1, (int) expertTopics.firstKey());
+    assertEquals("what is the origin of COVID-19",
+                 expertTopics.get(expertTopics.firstKey()).get("question"));
+    assertEquals("EQ001", expertTopics.get(expertTopics.firstKey()).get("question_id"));
+    assertEquals("coronavirus origin", expertTopics.get(expertTopics.firstKey()).get("query"));
+    assertEquals("seeking range of information about the SARS-CoV-2 virus's origin, " + 
+                 "including its evolution, animal source, and first transmission into humans",
+                 expertTopics.get(expertTopics.firstKey()).get("background"));
+
+    assertEquals(45, (int) expertTopics.lastKey());
+    assertEquals("How has the COVID-19 pandemic impacted mental health?",
+                 expertTopics.get(expertTopics.lastKey()).get("question"));
+    assertEquals("EQ045", expertTopics.get(expertTopics.lastKey()).get("question_id"));
+    assertEquals("coronavirus mental health impact",
+                 expertTopics.get(expertTopics.lastKey()).get("query"));
+    assertEquals("Includes increasing/decreasing rates of depression, anxiety, panic disorder, "+
+                 "and other psychiatric and mental health conditions.",
+                 expertTopics.get(expertTopics.lastKey()).get("background"));
+  }
+
+  public void testGetTopicsWithStringIdsFromFileWithTopicReader() {
+    Map<String, Map<String, String>> topics;
+
+    topics = TopicReader.getTopicsWithStringIdsFromFileWithTopicReaderClass(TrecTopicReader.class.getName(),
+        "src/main/resources/topics-and-qrels/topics.robust04.txt");
+
+    assertNotNull(topics);
+    assertEquals(250, topics.size());
+    assertEquals("International Organized Crime", topics.get("301").get("title"));
+    assertEquals("gasoline tax U.S.", topics.get("700").get("title"));
+
+    topics = TopicReader.getTopicsWithStringIdsFromFileWithTopicReaderClass(TsvIntTopicReader.class.getName(),
+        "src/main/resources/topics-and-qrels/topics.msmarco-doc.dev.txt");
+    assertNotNull(topics);
+    assertEquals(5193, topics.size());
+    assertEquals("androgen receptor define", topics.get("2").get("title"));
+    assertEquals("why do bears hibernate", topics.get("1102400").get("title"));
   }
 }

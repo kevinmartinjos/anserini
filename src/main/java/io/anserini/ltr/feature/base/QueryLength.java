@@ -16,27 +16,54 @@
 
 package io.anserini.ltr.feature.base;
 
+import io.anserini.ltr.feature.DocumentContext;
 import io.anserini.ltr.feature.FeatureExtractor;
-import io.anserini.rerank.RerankerContext;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Terms;
-
-import java.util.List;
+import io.anserini.ltr.feature.QueryContext;
+import io.anserini.ltr.feature.QueryFieldContext;
 
 /**
  * QueryCount
  * Compute the query length (number of terms in the query).
  */
-public class QueryLength<T> implements FeatureExtractor<T> {
+public class QueryLength implements FeatureExtractor {
+  private String qfield;
+  public QueryLength() {
+    this.qfield = "analyzed";
+  }
+
+  public QueryLength(String qfield){
+    this.qfield = qfield;
+  }
 
   @Override
-  public float extract(Document doc, Terms terms, RerankerContext<T> context) {
-    List<String> queryTokens = context.getQueryTokens();
-    return queryTokens.size();
+  public float extract(DocumentContext documentContext, QueryContext queryContext) {
+    QueryFieldContext queryFieldContext = queryContext.fieldContexts.get(qfield);
+    return queryFieldContext.queryTokens.size();
+  }
+
+  @Override
+  public float postEdit(DocumentContext context, QueryContext queryContext) {
+    QueryFieldContext queryFieldContext = queryContext.fieldContexts.get(qfield);
+    return queryFieldContext.getSelfLog(context.docId, getName());
   }
 
   @Override
   public String getName() {
-    return "QueryLength";
+    return String.format("%s_QueryLength",qfield);
+  }
+
+  @Override
+  public String getField() {
+    return null;
+  }
+
+  @Override
+  public String getQField() {
+    return qfield;
+  }
+
+  @Override
+  public FeatureExtractor clone() {
+    return new QueryLength(qfield);
   }
 }
