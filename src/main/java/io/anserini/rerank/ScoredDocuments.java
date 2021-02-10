@@ -81,14 +81,14 @@ public class ScoredDocuments {
         String[] runFileLine = line.trim().split("\\s+");
         String qid = runFileLine[0];
         String docid = runFileLine[2];
-        String rank = runFileLine[3];
+        int rank = Integer.parseInt(runFileLine[3]) - 1;
         float score = Float.parseFloat(runFileLine[4]);
         int luceneDocid = IndexReaderUtils.convertDocidToLuceneDocid(reader, docid);
 
         ScoredDocuments scoredDocs = trecRun.getOrDefault(qid, new ScoredDocuments(numResultsPerQuery));
-        scoredDocs.documents[i] = reader.document(luceneDocid);
-        scoredDocs.ids[i] = luceneDocid;
-        scoredDocs.scores[i] = score;
+        scoredDocs.documents[rank] = reader.document(luceneDocid);
+        scoredDocs.ids[rank] = luceneDocid;
+        scoredDocs.scores[rank] = score;
     }
 
     return trecRun;
