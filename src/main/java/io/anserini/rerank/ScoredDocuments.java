@@ -66,10 +66,9 @@ public class ScoredDocuments {
   }
 
   public ScoredDocuments(int numDocs){
-    ScoredDocuments scoredDocs = new ScoredDocuments();
-    scoredDocs.documents = new Document[numDocs];
-    scoredDocs.ids = new int[numDocs];
-    scoredDocs.scores = new float[numDocs];
+    this.documents = new Document[numDocs];
+    this.ids = new int[numDocs];
+    this.scores = new float[numDocs];
   }
 
   public static Map<String, ScoredDocuments> fromRunFile(String runFile, IndexReader reader) throws FileNotFoundException, IOException {
