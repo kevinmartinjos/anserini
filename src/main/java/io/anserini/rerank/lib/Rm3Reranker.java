@@ -90,7 +90,7 @@ public class Rm3Reranker implements Reranker {
 
     Query feedbackQuery = feedbackQueryBuilder.build();
 
-    return feedbackQuery.toString();
+    return feedbackQuery.toString(this.field);
   }
 
   @Override
