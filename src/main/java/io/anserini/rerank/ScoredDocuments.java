@@ -89,6 +89,8 @@ public class ScoredDocuments {
         scoredDocs.documents[rank] = reader.document(luceneDocid);
         scoredDocs.ids[rank] = luceneDocid;
         scoredDocs.scores[rank] = score;
+
+        trecRun.put(qid, scoredDocs);
     }
 
     return trecRun;
