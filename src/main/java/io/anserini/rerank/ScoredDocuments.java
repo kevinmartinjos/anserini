@@ -17,6 +17,7 @@
 package io.anserini.rerank;
 
 import io.anserini.index.IndexArgs;
+import io.anserini.index.IndexReaderUtils;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.document.Document;
@@ -35,8 +36,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.suggest.term.TermSuggestion;
 
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -53,7 +60,41 @@ public class ScoredDocuments {
   public int[] ids;
   // Scores returned from the searcher's similarity
   public float[] scores;
-  
+
+  public ScoredDocuments() {
+    this(0);
+  }
+
+  public ScoredDocuments(int numDocs){
+    ScoredDocuments scoredDocs = new ScoredDocuments();
+    scoredDocs.documents = new Document[numDocs];
+    scoredDocs.ids = new int[numDocs];
+    scoredDocs.scores = new float[numDocs];
+  }
+
+  public static Map<String, ScoredDocuments> fromRunFile(String runFile, IndexReader reader) throws FileNotFoundException, IOException {
+    Map<String, ScoredDocuments> trecRun = new HashMap<String, ScoredDocuments>();
+    int numResultsPerQuery = 1000;
+
+    BufferedReader in = new BufferedReader(new FileReader(runFile));
+    String line;
+    for(int i=0; (line=in.readLine()) != null; i++){
+        String[] runFileLine = line.trim().split("\\s+");
+        String qid = runFileLine[0];
+        String docid = runFileLine[2];
+        String rank = runFileLine[3];
+        float score = Float.parseFloat(runFileLine[4]);
+        int luceneDocid = IndexReaderUtils.convertDocidToLuceneDocid(reader, docid);
+
+        ScoredDocuments scoredDocs = trecRun.getOrDefault(qid, new ScoredDocuments(numResultsPerQuery));
+        scoredDocs.documents[i] = reader.document(luceneDocid);
+        scoredDocs.ids[i] = luceneDocid;
+        scoredDocs.scores[i] = score;
+    }
+
+    return trecRun;
+  }
+
   public static ScoredDocuments fromTopDocs(TopDocs rs, IndexSearcher searcher) {
     ScoredDocuments scoredDocs = new ScoredDocuments();
     scoredDocs.documents = new Document[rs.scoreDocs.length];

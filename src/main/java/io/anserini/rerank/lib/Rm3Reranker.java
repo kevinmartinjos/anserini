@@ -21,6 +21,7 @@ import io.anserini.rerank.Reranker;
 import io.anserini.rerank.RerankerContext;
 import io.anserini.rerank.ScoredDocuments;
 import io.anserini.analysis.AnalyzerUtils;
+import io.anserini.search.SearchArgs;
 import io.anserini.util.FeatureVector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,6 +67,30 @@ public class Rm3Reranker implements Reranker {
     this.fbDocs = fbDocs;
     this.originalQueryWeight = originalQueryWeight;
     this.outputQuery = outputQuery;
+  }
+
+  public String getExpandedQuery(String queryText, ScoredDocuments docs, IndexReader reader, SearchArgs args) {
+    assert(docs.documents.length == docs.scores.length);
+
+    FeatureVector qfv = FeatureVector.fromTerms(AnalyzerUtils.analyze(analyzer, queryText)).scaleToUnitL1Norm();
+
+    boolean useRf = (args.rf_qrels != null);
+    FeatureVector rm = estimateRelevanceModel(docs, reader, args.searchtweets, useRf);
+
+    rm = FeatureVector.interpolate(qfv, rm, originalQueryWeight);
+
+    BooleanQuery.Builder feedbackQueryBuilder = new BooleanQuery.Builder();
+
+    Iterator<String> terms = rm.iterator();
+    while (terms.hasNext()) {
+      String term = terms.next();
+      float prob = rm.getFeatureWeight(term);
+      feedbackQueryBuilder.add(new BoostQuery(new TermQuery(new Term(this.field, term)), prob), BooleanClause.Occur.SHOULD);
+    }
+
+    Query feedbackQuery = feedbackQueryBuilder.build();
+
+    return feedbackQuery.toString();
   }
 
   @Override

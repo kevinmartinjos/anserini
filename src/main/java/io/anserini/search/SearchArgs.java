@@ -229,7 +229,12 @@ public class SearchArgs {
 
   @Option(name = "-sdm.uw", metaVar = "[value]", usage = "unordered window weight in sdm")
   public float sdm_uw = 0.05f;
+  // --------------------------
+  // query expansion general options
+  // --------------------------
 
+  @Option(name = "-runFile", metaVar = "[file]", usage = "A file in TREC run format")
+  public String runFile;
   // --------------------------
   // query expansion model: rm3
   // --------------------------

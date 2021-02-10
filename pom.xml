@@ -110,6 +110,10 @@
               <id>SearchCollection</id>
             </program>
             <program>
+              <mainClass>io.anserini.search.ExpandQueries</mainClass>
+              <id>ExpandQueries</id>
+            </program>
+            <program>
               <mainClass>io.anserini.search.SearchSolr</mainClass>
               <id>SearchSolr</id>
             </program>
