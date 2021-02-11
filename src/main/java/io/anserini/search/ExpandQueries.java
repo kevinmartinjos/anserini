@@ -70,7 +70,7 @@ public class ExpandQueries implements Closeable {
             for (Map.Entry<String, String> entry: expandedTopics.entrySet()) {
                 String qid = entry.getKey();
                 String expandedQueryText = entry.getValue();
-                out.println(String.format(Locale.US, "%s %s", qid, expandedQueryText));
+                out.println(String.format(Locale.US, "%s\t%s", qid, expandedQueryText));
             }
             out.flush();
             out.close();
