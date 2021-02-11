@@ -54,7 +54,7 @@ public class ExpandQueries implements Closeable {
         HashMap<String, String> expandedTopics = new HashMap<String, String>();
 
         try {
-            DefaultEnglishAnalyzer analyzer = DefaultEnglishAnalyzer.fromArguments(args.stemmer, args.keepstop, args.stopwords);
+            DefaultEnglishAnalyzer analyzer = DefaultEnglishAnalyzer.newNonStemmingInstance();
             Rm3Reranker reranker = new Rm3Reranker(
                     analyzer, IndexArgs.CONTENTS, Integer.valueOf(args.rm3_fbTerms[0]), Integer.valueOf(args.rm3_fbDocs[0]), Float.valueOf(args.rm3_originalQueryWeight[0]),
                     false
