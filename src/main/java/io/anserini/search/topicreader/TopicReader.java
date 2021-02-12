@@ -52,6 +52,7 @@ public abstract class TopicReader<K> {
       Map.entry("topics.terabyte04.701-750.txt", TrecTopicReader.class),
       Map.entry("topics.terabyte05.751-800.txt", TrecTopicReader.class),
       Map.entry("topics.terabyte06.801-850.txt", TrecTopicReader.class),
+      Map.entry("topics.txt", TrecTopicReader.class),
       Map.entry("topics.web.51-100.txt", WebxmlTopicReader.class),
       Map.entry("topics.web.101-150.txt", WebxmlTopicReader.class),
       Map.entry("topics.web.151-200.txt", WebxmlTopicReader.class),
